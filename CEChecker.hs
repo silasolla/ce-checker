@@ -10,11 +10,11 @@ prompt message = putStr message >> I.hFlush I.stdout >> getLine
 
 ceChecker :: [Word.Word8] -> String
 ceChecker (byte : bytes)
-  | byte == 0x1B = "ISO-2022-JP"
-  | between 0x21 byte 0x7E = ceChecker bytes
+  | byte == 0x1B = "ISO-2022-JP" -- this is escape sequence
+  | between 0x21 byte 0x7E = ceChecker bytes -- one byte character
   | between 0x81 byte 0x9F = "Shift-JIS"
   | between 0xA1 byte 0xDF = "EUC-JP"
-  | otherwise = ceChecker' bytes
+  | otherwise = ceChecker' bytes -- checking second byte
   where ceChecker' (byte' : bytes')
           | between 0x40 byte' 0x7E || between 0x80 byte' 0xA0 = "Shift-JIS"
           | byte' == 0xFD || byte' == 0xFE = "EUC-JP"
